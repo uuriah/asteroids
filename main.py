@@ -11,6 +11,10 @@ def main():
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pygame.time.Clock()
+
+    # Set up background image
+    background_image = pygame.image.load('background.jpg').convert()
+    background_image = pygame.transform.smoothscale(background_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
     # delta time
     dt = 0
 
@@ -38,11 +42,18 @@ def main():
             if event.type == pygame.QUIT:
                 return
         screen.fill("black")
+        screen.blit(background_image, (0, 0))
+        
         updatable.update(dt)
         for item in drawable:
             item.draw(screen)
         
         for asteroid in asteroids:
+            for shot in shots:
+                if shot.collides_with(asteroid):
+                    log_event("asteroid_shot")
+                    asteroid.split()
+                    shot.kill()
             if asteroid.collides_with(player):
                 log_event("player_hit")
                 print("Game over!")
